@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Macache do
   it "has a version number" do
-    expect(Macache::VERSION).not_to be nil
+    expect(Macache::VERSION).not_to be(nil)
   end
 
   it "does something useful" do
