@@ -2,7 +2,6 @@
 
 require "macache/cache"
 require "macache/entry"
-require "macache/entry_handler"
 require "macache/stores"
 require "macache/stores/base"
 require "macache/stores/memory"
