@@ -1,7 +1,17 @@
 # frozen_string_literal: true
 
+require "macache/cache"
+require "macache/entry"
+require "macache/entry_handler"
+require "macache/stores"
+require "macache/stores/base"
+require "macache/stores/memory"
+require "macache/stores/null"
+require "macache/stores/proxy"
 require "macache/version"
 
 module Macache
-  # Your code goes here...
+
+  extend self
+
 end
