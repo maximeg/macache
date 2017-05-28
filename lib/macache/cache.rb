@@ -19,7 +19,7 @@ module Macache
 
     def fetch(key, expires_in: nil)
       entry = store.read(key)
-      return entry.value if entry && entry.value
+      return entry.value if entry && !entry.expired? && entry.value
 
       value = yield(key)
 
@@ -31,8 +31,14 @@ module Macache
 
     def get(key)
       entry = store.read(key)
+      return nil unless entry
 
-      entry && entry.value
+      if entry.expired?
+        store.delete(key)
+        return nil
+      end
+
+      entry.value
     end
 
     def set(key, value, expires_in: nil)

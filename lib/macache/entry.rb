@@ -3,12 +3,13 @@
 module Macache
   class Entry
 
-    def initialize(key, value, expires_in: nil, version: nil)
+    def initialize(key, value, created_at: nil, expires_in: nil, version: nil)
       @key = key
       @value = value
-      @version = version
+
+      @created_at = (created_at || Time.now).to_f
       @expires_in = expires_in.to_f if expires_in
-      @created_at = Time.now.to_f
+      @version = version
     end
 
     attr_reader :created_at, :expires_in, :key, :value, :version
@@ -34,9 +35,9 @@ module Macache
     end
 
     def expired?
-      return false unless entry.expires_in
+      return false unless expires_in
 
-      entry.created_at + entry.expires_in <= Time.now
+      created_at + expires_in <= Time.now.to_f
     end
 
   end

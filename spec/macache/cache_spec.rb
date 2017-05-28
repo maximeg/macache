@@ -15,7 +15,7 @@ RSpec.describe Macache::Cache do
         store.write("my_key", entry)
       end
 
-      it "returns the value of the entry" do
+      it "deletes the entry from the store" do
         expect {
           subject.clear
         }.to change { store.read("my_key") }.from(entry).to(nil)
@@ -23,7 +23,7 @@ RSpec.describe Macache::Cache do
     end
 
     context "when entry does not exist in store" do
-      it "returns nil" do
+      it "does nothing in the store" do
         expect {
           subject.clear
         }.not_to change { store.read("my_key") }.from(nil)
@@ -39,7 +39,7 @@ RSpec.describe Macache::Cache do
         store.write("my_key", entry)
       end
 
-      it "returns the value of the entry" do
+      it "deletes the entry from the store" do
         expect {
           subject.delete("my_key")
         }.to change { store.read("my_key") }.from(entry).to(nil)
@@ -47,7 +47,7 @@ RSpec.describe Macache::Cache do
     end
 
     context "when entry does not exist in store" do
-      it "returns nil" do
+      it "does nothing in the store" do
         expect {
           subject.delete("my_key")
         }.not_to change { store.read("my_key") }.from(nil)
@@ -83,6 +83,26 @@ RSpec.describe Macache::Cache do
             "my calculated value"
           end
         }.not_to change { store.read("my_key") }.from(entry)
+      end
+
+      context "when the entry has expired" do
+        let(:entry) { Macache::Entry.new("my_key", "my value", created_at: Time.now - 11, expires_in: 10) }
+
+        it "returns the value of the block" do
+          expect(
+            subject.fetch("my_key") do
+              "my calculated value"
+            end
+          ).to eq("my calculated value")
+        end
+
+        it "overwrites the entry in the store" do
+          expect {
+            subject.fetch("my_key") do
+              "my calculated value"
+            end
+          }.to change { store.read("my_key") }.from(entry).to(Macache::Entry.new("my_key", "my calculated value"))
+        end
       end
     end
 
@@ -121,6 +141,20 @@ RSpec.describe Macache::Cache do
 
       it "returns the value of the entry" do
         expect(subject.get("my_key")).to eq("my value")
+      end
+
+      context "when the entry has expired" do
+        let(:entry) { Macache::Entry.new("my_key", "my value", created_at: Time.now - 11, expires_in: 10) }
+
+        it "returns nil" do
+          expect(subject.get("my_key")).to eq(nil)
+        end
+
+        it "deletes the entry from the store" do
+          expect {
+            subject.get("my_key")
+          }.to change { store.read("my_key") }.from(entry).to(nil)
+        end
       end
     end
 
