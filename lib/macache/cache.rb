@@ -3,18 +3,28 @@
 module Macache
   class Cache
 
-    def initialize(store)
+    def initialize(store:)
       @store = store
     end
 
     attr_reader :store
 
-    def fetch(key)
-      value = get(key)
-      return value if value
+    def clear
+      store.clear
+    end
 
-      value = yield
-      set(key, value)
+    def delete(key)
+      store.delete(key)
+    end
+
+    def fetch(key, expires_in: nil)
+      entry = store.read(key)
+      return entry.value if entry && entry.value
+
+      value = yield(key)
+
+      entry = Entry.new(key, value, expires_in: expires_in)
+      store.write(key, entry)
 
       value
     end
@@ -25,8 +35,8 @@ module Macache
       entry && entry.value
     end
 
-    def set(key, value)
-      entry = Entry.new(key, value)
+    def set(key, value, expires_in: nil)
+      entry = Entry.new(key, value, expires_in: expires_in)
 
       store.write(key, entry)
     end

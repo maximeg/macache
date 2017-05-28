@@ -71,7 +71,7 @@ RSpec.describe Macache::Stores::Memory do
     let(:entry) { ::Macache::Entry.new("my_key", "my value") }
 
     context "when entry does exist in store" do
-      let(:existing_entry) { ::Macache::Entry.new("my_key", "my value") }
+      let(:existing_entry) { ::Macache::Entry.new("my_key", "my old value") }
 
       before { subject.write("my_key", existing_entry) }
 
