@@ -40,5 +40,15 @@ module Macache
       created_at + expires_in <= Time.now.to_f
     end
 
+    def expires_at
+      return nil unless expires_in
+
+      created_at + expires_in
+    end
+
+    def expires_at=(value)
+      @expires_in = value ? value.to_f - created_at : nil
+    end
+
   end
 end

@@ -17,9 +17,17 @@ module Macache
       store.delete(key)
     end
 
-    def fetch(key, expires_in: nil)
+    def fetch(key, expires_in: nil, race_condition_ttl: nil)
       entry = store.read(key)
-      return entry.value if entry && !entry.expired? && entry.value
+
+      return entry.value if entry && !entry.expired?
+
+      if entry && entry.expired?
+        if race_condition_ttl && Time.now.to_f <= entry.expires_at + race_condition_ttl
+          entry.expires_at = Time.now + race_condition_ttl
+          store.write(key, entry)
+        end
+      end
 
       value = yield(key)
 

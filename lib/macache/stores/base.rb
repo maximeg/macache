@@ -20,16 +20,6 @@ module Macache
         raise NotImplementedError
       end
 
-      private
-
-      def serialize(entry)
-        entry
-      end
-
-      def deserialize(stored_entry)
-        stored_entry
-      end
-
     end
   end
 end

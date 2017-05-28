@@ -30,6 +30,16 @@ module Macache
         @data[key] = stored_entry
       end
 
+      private
+
+      def serialize(entry)
+        entry
+      end
+
+      def deserialize(stored_entry)
+        stored_entry.dup
+      end
+
     end
   end
 end
